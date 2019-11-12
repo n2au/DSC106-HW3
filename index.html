@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Internal stylesheet import -->
+        <link rel="stylesheet" href="main.css">
+        <!-- External Script -->
+        <script src="https://code.highcharts.com/css/highcharts.css"></script>
+        <title>LocoTown Energy</title>
+    </head>
+    <body>
+        <!-- Page header table -->
+        <table class="simpletable" border="0">
+            <tr>
+                <td width="5%"><img src="assets/el_pollo_loco-logo.png" alt="Pollo Loco Logo" class="pageLogo" height="75px"></td>
+                <td><h1>LocoTown Energy</h1></td>
+            </tr>
+        </table>
+        <!-- Chart placement table -->
+        <table class="simpleTable greaterArea">
+            <tr>
+              <td rowspan="2" id="sharedGrid"></td>
+              <td id="legendGrid">The Legend table goes here!</td>
+            </tr>
+            <tr>
+                <td id="pieGrid"></td>
+            </tr>
+        </table>
+        <!-- External imports begin -->
+        <script src ="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>  
+        <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>  
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+        <!-- External imports end -->
+
+        <!-- Internal imports begin -->
+        <script src="main.js"></script>
+        <!-- Internal imports end -->
+    </body>
+</html>
