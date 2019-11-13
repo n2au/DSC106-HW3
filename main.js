@@ -46,54 +46,16 @@
     );
     });
     
-    /**
-    * Highlight a point by showing tooltip, setting hover state and draw crosshair
-    */
-    Highcharts.Point.prototype.highlight = function (event) {
-        event = this.series.chart.pointer.normalize(event);
-        this.onMouseOver(); // Show the hover marker
-        this.series.chart.tooltip.refresh(this); // Show the tooltip
-        this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair
-        this.series.chart.yAxis[0].drawCrosshair(event, this);
-    };
     
-    
-    /**
-    * Synchronize zooming through the setExtremes event handler.
-    */
-    function syncExtremes(e) {
-    var thisChart = this.chart;
-    
-    if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
-        Highcharts.each(Highcharts.charts, function (chart) {
-            if (chart !== thisChart) {
-                if (chart.xAxis[0].setExtremes) { // It is null while updating
-                    chart.xAxis[0].setExtremes(
-                        e.min,
-                        e.max,
-                        undefined,
-                        false,
-                        { trigger: 'syncExtremes' }
-                    );
-                }
-            }
-        });
-        }
-    }
-    
-    
-    /* Add this to the xAxis attribute of each chart. */
-    events: {
-            setExtremes: syncExtremes
-        }
 
 var energyConfig = {
     // config for the energy stacked area graph
     chart: {
-            type: 'area',
+            type: 'areaspline',
             marginLeft: 40, // Keep all charts left aligned
             spacingTop: 20,
-            spacingBottom: 20        
+            spacingBottom: 20,
+            backgroundColor: "transparent"      
     },
     legend:{
         enabled: false
@@ -103,19 +65,33 @@ var energyConfig = {
         text: 'Generation (MW)',
         fontSize: 18,
     },
-    "crosshair-x":{
-        shared: true
-    },
     tooltip: {
         crosshairs: [{
           width: 2,
           color: 'red',
           zIndex: 3
         }],
-
+        shared: true,
+        formatter: function () {
+            return Highcharts.dateFormat('%e %b. %I:%M %P',
+            new Date(this.points[0].x)) + ' Total '+ this.points[0].total + ' MW'
+        },
+        positioner: function () {
+            return {
+                // right aligned
+                x: this.chart.chartWidth - this.label.width,
+                y: 10 // align to title
+            };
+        },
+        borderWidth: 0,
+        backgroundColor: 'none',
+        shadow: false,
+        style: {
+            fontSize: '10px'
+        },
+        snap: 100,
         enabled: false
-
-      },
+    },
     plot: {
         tooltip:{
             visible: false
@@ -126,31 +102,47 @@ var energyConfig = {
     plotarea: {
         margin: "dynamic"
     },
-    "scale-x": {
-        "min-value": 1571579700,
-        "step": "30minute",
-        "transform": {
-            "type": "date",
-            "all": "%m/%d/%Y<br>%h:%i:%s:%q %A"
+    xAxis: {
+        type: 'datetime',
+        minorTickInterval: 1000*60*30,
+        dateTimeLabelFormats: {
+            month: '%b \'%y'
         },
-        "item": {
-            "font-size": 9
+        crosshair: {
+            color: '#CA5131',
+            width: 1,
+            zIndex: 5
+        },
+        events: {
+            setExtremes: syncExtremes
         }
     },
-    "utc": true,
-    "timezone": 0,
-    'scale-y': {
-        values: "0:80:10",
-        format: "%v",
-        guide: {
-            'line-style': "dotted"
-        }
+    yAxis: {
+        title: {
+            enabled: false
+        },
+        labels: {
+            formatter: function (){
+                return this.value;
+            },
+            align: 'left',
+            reserveSpace: false,
+            x: 5,
+            y: -3
+        },
+        tickInterval: 1000,
+        showLastLabel: false,
+        min: -300
     },
     plotOptions: {
         series: {
+            stacking: "normal",
             states: {
                 inactive: {
                     opacity: 1
+                },
+                hover: {
+                    enabled: false
                 }
             }
         }
@@ -174,12 +166,9 @@ var priceConfig = {
         text: 'Price ($/MWh)',
         fontSize: 18,
     },
-    "crosshair-x":{
-        shared: true
-    },
     tooltip: {
         crosshairs: [{
-          width: 2,
+          width: 1,
           color: 'red',
           zIndex: 3
         }],
@@ -187,38 +176,30 @@ var priceConfig = {
         enabled: false
 
       },
-    plot: {
-        tooltip:{
-            visible: false
-        }
+    xAxis: {
+        visible: false
     },
-    plotarea: {
-    },
-    "scale-x": {
-        "min-value": 1571579700,
-        "step": "30minute",
-        "transform": {
-            "type": "date",
-            "all": "%m/%d/%Y<br>%h:%i:%s:%q %A"
+    yAxis: {
+        title: {
+            enabled: false
         },
-        "item": {
-            "font-size": 9
-        }
-    },
-    "utc": true,
-    "timezone": 0,
-    'scale-y': {
-        values: "0:30",
-        format: "%v",
-        guide: {
-          'line-style': "dotted"
-        }
+        labels: {
+            align: 'left',
+            reserveSpace: false,
+        },
     },
     plotOptions: {
         line: {
+            step: 'left',
             color: "red",
             lineWidth: 1
-
+        },
+        series: {
+            states: {
+                hover: {
+                    enabled: false
+                }
+            }
         }
     },
     series: []
@@ -237,56 +218,78 @@ var tempConfig = {
         text: 'Temperature (\u2109)',
         fontSize: 18,
     },
-    "crosshair-x":{
-        shared: true
-    },
     legend:{
         enabled: false
     },
     tooltip: {
         crosshairs: [{
-          width: 2,
+          width: 1,
           color: 'red',
           zIndex: 3
         }],
 
         enabled: false
-
       },
-    plot: {
-        tooltip:{
-            visible: false
-        }
+    xAxis: {
+        visible: false
     },
-    plotarea: {
-    },
-    "scale-x": {
-        "min-value": 1571579700,
-        "step": "30minute",
-        "transform": {
-            "type": "date",
-            "all": "%m/%d/%Y<br>%h:%i:%s:%q %A"
+    yAxis: {
+        title: {
+            enabled: false
         },
-        "item": {
-            "font-size": 9
-        }
-    },
-    "utc": true,
-    "timezone": 0,
-    'scale-y': {
-        values: "0:80:20",
-        format: "%v",
-        guide: {
-            'line-style': "dotted"
-        }
+        labels: {
+            align: 'left',
+            reserveSpace: false,
+        },
     },
     plotOptions: {
         line: {
             color: "red",
             lineWidth: 1
+        },
+        series: {
+            states: {
+                hover: {
+                    enabled: false
+                }
+            }
         }
     },
     series: []
+}
+
+var pieOptions = {
+    chart: {
+        renderTo: 'pieGrid',
+        type: 'pie',
+        backgroundColor: 'transparent',
+        animation: false
+    },
+    plotOptions: {
+        pie: {
+            innerSize: '50%',
+            size: '75%',
+            dataLabels: {
+                enabled: false
+            }
+        },
+        series: {
+            animation: false
+        }
+    },
+    title: {
+        align: 'center',
+        verticalAlign: 'middle',
+        text: '',
+        style: {
+            fontSize: '13px'
+        }
+    },
+    series: [{
+        name: 'Energy',
+        colorByPoint: true,
+        data: []
+    }]
 }
 var colorsMap = {
     'black_coal': '#000000', 
@@ -305,6 +308,9 @@ var globalEnergyData = {
 
 // function to do deep-copy on the global data structure
 function updateEnergyData(data) {
+    data = data.filter(function(elm) {
+        return (elm.name !== 'pumps' & elm.name !== 'exports')
+    })
     globalEnergyData.data = [];
     for (var idx = 0; idx < data[0]['data'].length; idx ++) {
         var energyBreakup = data.map(elm => {return elm['data'][idx]});
@@ -313,6 +319,25 @@ function updateEnergyData(data) {
       globalEnergyData['name'] = data.map(elm => elm['name']);
 }
 
+
+function renderPieChart(nodeId) {
+    var pieData = globalEnergyData['name'].map(function(elm, idx) {
+        if (globalEnergyData['name'] !== 'pumps' & globalEnergyData['name'] !== 'exports') {
+            return {
+                name: elm.split('.')[elm.split('.').length - 1],
+                y: globalEnergyData['data'][nodeId][idx],
+                color: colorsMap[elm.split('.')[elm.split('.').length - 1]]
+            }
+        }
+    });
+    pieOptions.series[0].data = pieData;
+    var total = 0;
+    for (var i = 0; i < pieOptions.series[0].data.length; i++) {
+        total = total + pieOptions.series[0].data[i].y
+    }
+    pieOptions.title.text = Math.round(total) + ' MW';
+    Highcharts.chart(pieOptions)
+  }
 // this function is responsible for plotting the energy on
 // successfully loading the JSON data
 // It also plots the pie chart for nodeId=0
@@ -363,7 +388,7 @@ function onSuccessCb(jsonData) {
         };
     });
 
-    energyConfig.series = energyData;
+    energyConfig.series = energyData.reverse();
     priceConfig.series = priceData;
     tempConfig.series = tempData;
 
@@ -381,9 +406,101 @@ function onSuccessCb(jsonData) {
     chartDiv3.className = 'smChart';
     document.getElementById('sharedGrid').appendChild(chartDiv3);
     Highcharts.chart(chartDiv3, tempConfig);
+
+    renderPieChart(0)
     
 }
+['mouseleave'].forEach(function (eventType) {
+    document.getElementById('sharedGrid').addEventListener(
+        eventType,
+        function (e) {
+            var chart,
+                point,
+                i,
+                event;
+            
+                for (i = 0; i < Highcharts.charts.length; i = i + 1) {
+                    chart = Highcharts.charts[i];
+                    event = chart.pointer.normalize(e);
+                    point = chart.series[0].searchPoint(event, true);
+                    
+                    if (point) {
+                        point.onMouseOut(); 
+                        chart.tooltip.hide(point);
+                        chart.xAxis[0].hideCrosshair(); 
+                    }
+                }
+            }
+    )
+});
 
+['mousemove', 'touchmove', 'touchstart'].forEach(function (eventType) {
+    document.getElementById('sharedGrid').addEventListener(
+        eventType,
+        function (e) {
+            var chart,
+                point,
+                i,
+                event,
+                idx;
+
+            for (i = 0; i < Highcharts.charts.length; i = i + 1) {
+                chart = Highcharts.charts[i];
+                // Find coordinates within the chart
+                event = chart.pointer.normalize(e);
+                // Get the hovered point
+                point = chart.series[0].searchPoint(event, true);
+                idx = chart.series[0].data.indexOf( point );
+
+                if (point) {
+                    point.highlight(e);
+                    renderPieChart(idx);
+                }
+            }
+        }
+    );
+});
+
+/**
+    * Highlight a point by showing tooltip, setting hover state and draw crosshair
+    */
+   Highcharts.Point.prototype.highlight = function (event) {
+    event = this.series.chart.pointer.normalize(event);
+    this.onMouseOver(); // Show the hover marker
+    this.series.chart.tooltip.refresh(this); // Show the tooltip
+    this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair
+    this.series.chart.yAxis[0].drawCrosshair(event, this);
+};
+
+
+/**
+* Synchronize zooming through the setExtremes event handler.
+*/
+function syncExtremes(e) {
+var thisChart = this.chart;
+
+if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
+    Highcharts.each(Highcharts.charts, function (chart) {
+        if (chart !== thisChart) {
+            if (chart.xAxis[0].setExtremes) { // It is null while updating
+                chart.xAxis[0].setExtremes(
+                    e.min,
+                    e.max,
+                    undefined,
+                    false,
+                    { trigger: 'syncExtremes' }
+                );
+            }
+        }
+    });
+    }
+}
+
+
+/* Add this to the xAxis attribute of each chart. */
+events: {
+        setExtremes: syncExtremes
+    }
 // Utility function to fetch any file from the server
 function fetchJSONFile(path, callback) {
     var httpRequest = new XMLHttpRequest();

@@ -1,3 +1,8 @@
+body {
+    background: "#ece9e6";
+    color: "#333";
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', Times, serif;
+}
 .simpleTable {
     width: 100%;
     border: 1px solid black;
