@@ -16,10 +16,86 @@
             </tr>
         </table>
         <!-- Chart placement table -->
-        <table class="simpleTable greaterArea">
+        <table class="simpleTable greaterArea" border="0">
             <tr>
               <td rowspan="2" id="sharedGrid"></td>
-              <td id="legendGrid">The Legend table goes here!</td>
+              <td id="legendGrid"><table border="0">
+                <tbody border="0">
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td>Power(MW)</td>
+                    <td>Contribution to Demand</td>
+                    <td>Av. Value</td>
+                  </tr>
+                  <tr>
+                    <td class="bolded">Sources</td>
+                    <td id="totalSrc" class="bolded"></td>
+                    <td></td>
+                    <td id="price" class="bolded"></td>
+                  </tr>
+                  <tr>
+                    <td id="wind">Wind</td>
+                    <td id="windpower">&nbsp;</td>
+                    <td id="winddemand">&nbsp;</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td id="hydro">Hydro</td>
+                    <td id="hydropower"></td>
+                    <td id="hydrodemand"></td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td id = "gas">Gas (CCGT)</td>
+                    <td id = "gaspower"></td>
+                    <td id = "gasdemand"></td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td id = "dist">Distillate</td>
+                    <td id = "distpower"></td>
+                    <td id = "distdemand"></td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td id = "coal">Black Coal</td>
+                    <td id = "coalpower"></td>
+                    <td id = "coaldemand"></td>
+                    <td>&nbsp;</td>
+                  </tr>
+                    <tr>
+                    <td class="bolded">Loads</td>
+                    <td id="totalLoad" class="bolded"></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td id = "exports">Exports</td>
+                    <td id = "exportspower"></td>
+                    <td id = "exportsdemand"></td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td id = "pumps">Pumps</td>
+                    <td id = "pumpspower"></td>
+                    <td id = "pumpsdemand"></td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td class = "bolded">Net</td>
+                    <td id = "total" class="bolded"></td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td class = "bolded">Renewables</td>
+                    <td>&nbsp;</td>
+                    <td id = "renewables" class="bolded"></td>
+                    <td>&nbsp;</td>
+                  </tr>
+                </tbody>
+              </table></td>
+              
             </tr>
             <tr>
                 <td id="pieGrid"></td>

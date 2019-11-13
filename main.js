@@ -1,53 +1,6 @@
-['mouseleave'].forEach(function (eventType) {
-    document.getElementById('sharedGrid').addEventListener(
-        eventType,
-        function (e) {
-            var chart,
-                point,
-                i,
-                event;
-            
-                for (i = 0; i < Highcharts.charts.length; i = i + 1) {
-                    chart = Highcharts.charts[i];
-                    event = chart.pointer.normalize(e);
-                    point = chart.series[0].searchPoint(event, true);
-                    
-                    if (point) {
-                        point.onMouseOut(); 
-                        chart.tooltip.hide(point);
-                        chart.xAxis[0].hideCrosshair(); 
-                    }
-                }
-            }
-        )
-    });
-    
-    ['mousemove', 'touchmove', 'touchstart'].forEach(function (eventType) {
-    document.getElementById('sharedGrid').addEventListener(
-        eventType,
-        function (e) {
-            var chart,
-                point,
-                i,
-                event;
-    
-            for (i = 0; i < Highcharts.charts.length; i = i + 1) {
-                chart = Highcharts.charts[i];
-                // Find coordinates within the chart
-                event = chart.pointer.normalize(e);
-                // Get the hovered point
-                point = chart.series[0].searchPoint(event, true);
-    
-                if (point) {
-                    point.highlight(e);
-                }
-            }
-        }
-    );
-    });
-    
-    
-
+var totalPower;
+var totalSrcPower;
+var totalLoadPower;
 var energyConfig = {
     // config for the energy stacked area graph
     chart: {
@@ -258,7 +211,7 @@ var tempConfig = {
     series: []
 }
 
-var pieOptions = {
+var pieConfig = {
     chart: {
         renderTo: 'pieGrid',
         type: 'pie',
@@ -330,13 +283,13 @@ function renderPieChart(nodeId) {
             }
         }
     });
-    pieOptions.series[0].data = pieData;
+    pieConfig.series[0].data = pieData;
     var total = 0;
-    for (var i = 0; i < pieOptions.series[0].data.length; i++) {
-        total = total + pieOptions.series[0].data[i].y
+    for (var i = 0; i < pieConfig.series[0].data.length; i++) {
+        total = total + pieConfig.series[0].data[i].y
     }
-    pieOptions.title.text = Math.round(total) + ' MW';
-    Highcharts.chart(pieOptions)
+    pieConfig.title.text = Math.round(total) + ' MW';
+    Highcharts.chart(pieConfig)
   }
 // this function is responsible for plotting the energy on
 // successfully loading the JSON data
