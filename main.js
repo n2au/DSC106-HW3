@@ -1,8 +1,7 @@
 var total;
-var totalSrcPower;
-var totalLoadPower;
 var pie_bar_chart;
 var priceData;
+var currDate;
 var energyConfig = {
     // config for the energy stacked area graph
     chart: {
@@ -16,12 +15,16 @@ var energyConfig = {
         enabled: false
     },
     title: {
-        style: {
-            fontWeight: 'bold'
-        },
         align: "left",
-        text: 'Generation (MW)',
+        text: 'Generation',
         fontSize: 18,
+    },
+    subtitle: {
+        text: 'MW',
+        align: 'left'
+    },
+    credits: {
+        enabled: false
     },
     tooltip: {
         crosshairs: [{
@@ -122,8 +125,15 @@ var priceConfig = {
     },
     title: {
         align: "left",
-        text: 'Price ($/MWh)',
+        text: 'Price',
         fontSize: 18,
+    },
+    subtitle: {
+        text: '$/MWh',
+        align: 'left'
+    },
+    credits: {
+        enabled: false
     },
     tooltip: {
         crosshairs: [{
@@ -131,8 +141,18 @@ var priceConfig = {
           color: 'red',
           zIndex: 3
         }],
-
-        enabled: false
+        backgroundColor : '#ece9e1',
+        borderColor :  '#000000',
+        positioner : function() {
+            return {x : this.chart.chartWidth - this.label.width - 5,y : 10}
+        },
+        useHTML : true,
+        formatter : function() {
+            price = this.y;
+            return ' $' + price + '</b>' ;
+        },
+        shape: 'rect',
+        enabled: true
 
       },
     xAxis: {
@@ -177,8 +197,12 @@ var tempConfig = {
     },
     title: {
         align: "left",
-        text: 'Temperature (\u2109)',
+        text: 'Temperature',
         fontSize: 18,
+    },
+    subtitle: {
+        text: '\u2109',
+        align: 'left'
     },
     legend:{
         enabled: false
@@ -189,7 +213,17 @@ var tempConfig = {
           color: 'red',
           zIndex: 3
         }],
-        enabled: false
+        useHTML : true,
+        backgroundColor : '#ece9e1',
+        borderColor :  '#000000',
+        positioner : function() {
+            return {x : this.chart.chartWidth - this.label.width - 5,y : 10}
+        },
+        formatter : function() {
+            return ' Av ' + this.y + '°F </b>';
+        },
+        shape: 'rect',
+        enabled: true
       },
     xAxis: {
         visible: false
@@ -245,6 +279,9 @@ var pieConfig = {
         style: {
             fontSize: '13px'
         }
+    },
+    credits: {
+        enabled: false
     },
     series: [{
         name: 'Energy',
