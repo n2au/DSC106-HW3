@@ -1,6 +1,8 @@
-var totalPower;
+var total;
 var totalSrcPower;
 var totalLoadPower;
+var pie_bar_chart;
+var priceData;
 var energyConfig = {
     // config for the energy stacked area graph
     chart: {
@@ -14,6 +16,9 @@ var energyConfig = {
         enabled: false
     },
     title: {
+        style: {
+            fontWeight: 'bold'
+        },
         align: "left",
         text: 'Generation (MW)',
         fontSize: 18,
@@ -59,8 +64,9 @@ var energyConfig = {
         type: 'datetime',
         minorTickInterval: 1000*60*30,
         dateTimeLabelFormats: {
-            month: '%b \'%y'
+            day: '%a \n %d %b'
         },
+        tickInterval:24*3600*1000,
         crosshair: {
             color: '#CA5131',
             width: 1,
@@ -161,10 +167,13 @@ var priceConfig = {
 var tempConfig = {
     // config for the temperature line graph
     chart: {
-            type: "line",
-            marginLeft: 40, // Keep all charts left aligned
-            spacingTop: 20,
-            spacingBottom: 20        
+        type: "line",
+        marginLeft: 40, // Keep all charts left aligned
+        spacingTop: 20,
+        spacingBottom: 20        
+    },
+    credits: {
+        enabled: false
     },
     title: {
         align: "left",
@@ -180,7 +189,6 @@ var tempConfig = {
           color: 'red',
           zIndex: 3
         }],
-
         enabled: false
       },
     xAxis: {
@@ -213,10 +221,10 @@ var tempConfig = {
 
 var pieConfig = {
     chart: {
-        renderTo: 'pieGrid',
+        renderTo: 'switchChart',//'pieGrid',
         type: 'pie',
         backgroundColor: 'transparent',
-        animation: false
+        animation: false,
     },
     plotOptions: {
         pie: {
@@ -258,7 +266,22 @@ var globalEnergyData = {
   name: [],
   data: []
 };
+var pumpEx = {
+    name: [],
+    data: []
+};
 
+function getpump(data) {
+    data = data.filter(function(elm) {
+        return (elm.name == 'pumps' || elm.name == 'exports')
+    })
+    pumpEx.data = [];
+    for (var idx = 0; idx < data[0]['data'].length; idx ++) {
+        var breaker = data.map(elm => {return elm['data'][idx]});
+        pumpEx['data'].push(breaker);
+    }
+    pumpEx['name'] = data.map(elm => elm['name']);
+}
 // function to do deep-copy on the global data structure
 function updateEnergyData(data) {
     data = data.filter(function(elm) {
@@ -268,10 +291,9 @@ function updateEnergyData(data) {
     for (var idx = 0; idx < data[0]['data'].length; idx ++) {
         var energyBreakup = data.map(elm => {return elm['data'][idx]});
         globalEnergyData['data'].push(energyBreakup);
-      }
-      globalEnergyData['name'] = data.map(elm => elm['name']);
+    }
+    globalEnergyData['name'] = data.map(elm => elm['name']);
 }
-
 
 function renderPieChart(nodeId) {
     var pieData = globalEnergyData['name'].map(function(elm, idx) {
@@ -284,13 +306,47 @@ function renderPieChart(nodeId) {
         }
     });
     pieConfig.series[0].data = pieData;
-    var total = 0;
+    total = 0;
     for (var i = 0; i < pieConfig.series[0].data.length; i++) {
         total = total + pieConfig.series[0].data[i].y
     }
     pieConfig.title.text = Math.round(total) + ' MW';
-    Highcharts.chart(pieConfig)
+    pie_bar_chart = Highcharts.chart(pieConfig)
   }
+
+var renew = document.getElementById("renewables");
+var sour = document.getElementById("totalSrc");
+var loads = document.getElementById("totalLoad");
+
+
+function updateLegendData(idx) {
+    document.getElementById("windp").innerHTML = (globalEnergyData.data[idx][0]).toFixed(2);
+    document.getElementById("hydrop").innerHTML = (globalEnergyData.data[idx][1]).toFixed(2);
+    document.getElementById("gasp").innerHTML = (globalEnergyData.data[idx][2]).toFixed(2);
+    document.getElementById("distp").innerHTML = (globalEnergyData.data[idx][3]).toFixed(2);
+    document.getElementById("coalp").innerHTML = (globalEnergyData.data[idx][4]).toFixed(2);
+    document.getElementById("exportsp").innerHTML = (pumpEx.data[idx][0]).toFixed(2);
+    document.getElementById("pumpsp").innerHTML = (pumpEx.data[idx][1]).toFixed(2);
+
+    
+    document.getElementById("windd").innerHTML = (globalEnergyData.data[idx][0]/total*100).toFixed(2) + "%";
+    document.getElementById("hydrod").innerHTML = (globalEnergyData.data[idx][1]/total*100).toFixed(2) + "%";
+    document.getElementById("gasd").innerHTML = (globalEnergyData.data[idx][2]/total*100).toFixed(2) + "%";
+    document.getElementById("distd").innerHTML = (globalEnergyData.data[idx][3]/total*100).toFixed(2) + "%";
+    document.getElementById("coald").innerHTML = (globalEnergyData.data[idx][4]/total*100).toFixed(2) + "%";
+    document.getElementById("exportsd").innerHTML = (pumpEx.data[idx][0]/total*100).toFixed(2) + "%";
+    document.getElementById("pumpsd").innerHTML = (pumpEx.data[idx][1]/total*100).toFixed(2) + "%";
+    
+    var bigLoad = pumpEx.data[idx][0] + pumpEx.data[idx][1];
+    var bigTot = bigLoad + total;
+
+    document.getElementById("net").innerHTML = total.toFixed(2);
+    document.getElementById("price").innerHTML = "$" + priceData[0].data[idx].toFixed(2);
+    renew.innerHTML = ((globalEnergyData.data[idx][0] / total + globalEnergyData.data[idx][1] / total) * 100).toFixed(2) + "%";
+    loads.innerHTML = bigLoad.toFixed(2);
+    sour.innerHTML = bigTot.toFixed(2);
+
+}
 // this function is responsible for plotting the energy on
 // successfully loading the JSON data
 // It also plots the pie chart for nodeId=0
@@ -323,8 +379,9 @@ function onSuccessCb(jsonData) {
         };
     });
     updateEnergyData(energyData.reverse());
+    getpump(energyData);
 
-    var priceData = jsonData.filter(function(elm) {
+    priceData = jsonData.filter(function(elm) {
         return elm['type'] === 'price';
     }).map(function(elm) {
         return {
@@ -408,6 +465,7 @@ function onSuccessCb(jsonData) {
                 if (point) {
                     point.highlight(e);
                     renderPieChart(idx);
+                    updateLegendData(idx);
                 }
             }
         }
@@ -475,3 +533,38 @@ function doMain() {
 }
 
 document.onload = doMain();
+
+
+document.getElementById('makeBar').addEventListener('click', function() {
+    pie_bar_chart.update({
+        chart: {
+            type: 'bar'
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    enabled: true
+                }
+            }
+        },
+        xAxis: {
+            visible: false
+        },
+        yAxis: {
+            visible: false
+        },
+        legend: {
+            enabled:false
+        }
+    });
+    renderPieChart(0);
+})
+
+document.getElementById('makePie').addEventListener('click', function() {
+    pie_bar_chart.update({
+        chart: {
+            type: 'pie'
+        }
+    });
+    renderPieChart(0);
+})

@@ -9,18 +9,19 @@
     </head>
     <body>
         <!-- Page header table -->
-        <table class="simpletable" border="0">
+        <table class="simpletable">
+          
             <tr>
-                <td width="5%"><img src="assets/el_pollo_loco-logo.png" alt="Pollo Loco Logo" class="pageLogo" height="75px"></td>
-                <td><h1>LocoTown Energy</h1></td>
+              <td width="5%"><img src="assets/el_pollo_loco-logo.png" alt="Pollo Loco Logo" class="pageLogo" height="75px"></td>
+              <td><h1>LocoTown Energy</h1></td>
             </tr>
         </table>
         <!-- Chart placement table -->
-        <table class="simpleTable greaterArea" border="0">
+        <table class="simpleTable greaterArea">
             <tr>
               <td rowspan="2" id="sharedGrid"></td>
-              <td id="legendGrid"><table border="0">
-                <tbody border="0">
+              <td id="legendGrid"><table >
+                <tbody>
                   <tr>
                     <td>&nbsp;</td>
                     <td>Power(MW)</td>
@@ -28,79 +29,84 @@
                     <td>Av. Value</td>
                   </tr>
                   <tr>
-                    <td class="bolded">Sources</td>
-                    <td id="totalSrc" class="bolded"></td>
+                    <td>Sources</td>
+                    <td id="totalSrc"></td>
                     <td></td>
-                    <td id="price" class="bolded"></td>
+                    <td id="price"></td>
                   </tr>
                   <tr>
                     <td id="wind">Wind</td>
-                    <td id="windpower">&nbsp;</td>
-                    <td id="winddemand">&nbsp;</td>
+                    <td id="windp">&nbsp;</td>
+                    <td id="windd">&nbsp;</td>
                     <td>&nbsp;</td>
                   </tr>
                   <tr>
                     <td id="hydro">Hydro</td>
-                    <td id="hydropower"></td>
-                    <td id="hydrodemand"></td>
+                    <td id="hydrop"></td>
+                    <td id="hydrod"></td>
                     <td>&nbsp;</td>
                   </tr>
                   <tr>
                     <td id = "gas">Gas (CCGT)</td>
-                    <td id = "gaspower"></td>
-                    <td id = "gasdemand"></td>
+                    <td id = "gasp"></td>
+                    <td id = "gasd"></td>
                     <td>&nbsp;</td>
                   </tr>
                   <tr>
                     <td id = "dist">Distillate</td>
-                    <td id = "distpower"></td>
-                    <td id = "distdemand"></td>
+                    <td id = "distp"></td>
+                    <td id = "distd"></td>
                     <td>&nbsp;</td>
                   </tr>
                   <tr>
                     <td id = "coal">Black Coal</td>
-                    <td id = "coalpower"></td>
-                    <td id = "coaldemand"></td>
+                    <td id = "coalp"></td>
+                    <td id = "coald"></td>
                     <td>&nbsp;</td>
                   </tr>
                     <tr>
-                    <td class="bolded">Loads</td>
-                    <td id="totalLoad" class="bolded"></td>
+                    <td>Loads</td>
+                    <td id="totalLoad"></td>
                     <td></td>
                     <td></td>
                   </tr>
                   <tr>
                     <td id = "exports">Exports</td>
-                    <td id = "exportspower"></td>
-                    <td id = "exportsdemand"></td>
+                    <td id = "exportsp"></td>
+                    <td id = "exportsd"></td>
                     <td>&nbsp;</td>
                   </tr>
                   <tr>
                     <td id = "pumps">Pumps</td>
-                    <td id = "pumpspower"></td>
-                    <td id = "pumpsdemand"></td>
+                    <td id = "pumpsp"></td>
+                    <td id = "pumpsd"></td>
                     <td>&nbsp;</td>
                   </tr>
                   <tr>
-                    <td class = "bolded">Net</td>
-                    <td id = "total" class="bolded"></td>
+                    <td>Net</td>
+                    <td id = "net"></td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                   </tr>
                   <tr>
-                    <td class = "bolded">Renewables</td>
+                    <td>Renewables</td>
                     <td>&nbsp;</td>
-                    <td id = "renewables" class="bolded"></td>
+                    <td id = "renewables"></td>
                     <td>&nbsp;</td>
                   </tr>
                 </tbody>
               </table></td>
-              
             </tr>
             <tr>
-                <td id="pieGrid"></td>
+                <td id="pieGrid">
+                  <div style="text-align: center;">
+                  <button id="makeBar">Bar Chart</button>
+                  <button id="makePie">Pie Chart</button>
+                  </div>
+                  <div id="switchChart"></div>
+                </td>
             </tr>
-        </table>
+        </table> 
         <!-- External imports begin -->
         <script src ="https://code.highcharts.com/highcharts.js"></script>
         <script src="https://code.highcharts.com/modules/exporting.js"></script>  
