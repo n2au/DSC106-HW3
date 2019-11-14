@@ -322,7 +322,7 @@ function onSuccessCb(jsonData) {
             }
         };
     });
-    updateEnergyData(energyData);
+    updateEnergyData(energyData.reverse());
 
     var priceData = jsonData.filter(function(elm) {
         return elm['type'] === 'price';
@@ -341,7 +341,7 @@ function onSuccessCb(jsonData) {
         };
     });
 
-    energyConfig.series = energyData.reverse();
+    energyConfig.series = energyData;
     priceConfig.series = priceData;
     tempConfig.series = tempData;
 
